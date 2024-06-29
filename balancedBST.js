@@ -61,7 +61,7 @@ class Tree {
             let node = queue.shift()
             if (node.left) queue.push(node.left);
             if (node.right) queue.push(node.right);
-            if (fn) fn(node.value);
+            if (fn) fn(node);
             valueArr.push(node.value);
         }
         if (!fn) return valueArr;
@@ -105,6 +105,21 @@ class Tree {
         if (node.value < root.value) return this.depth(root.left, node) + 1;
         if (node.value > root.value) return this.depth(root.right, node) + 1;
 
+    }
+
+    isBalance() {
+        let result = true;
+        this.levelOrder(this.root, (node) => {
+            if (Math.abs((this.height(node.left) - this.height(node.right))) > 1) {
+                result = false;
+            }
+        });
+        return result;
+    }
+
+    reBalance() {
+        let arr = this.levelOrder(this.root);
+        this.root = buildTree(arr);
     }
 
 }
@@ -154,7 +169,7 @@ function traverseInOrder(root, fn) {
     if (root == null) return;
     traverseInOrder(root.left, fn);
 
-    if (fn) fn(root.value);
+    if (fn) fn(root);
     tree.traversalArr.push(root.value);
 
     traverseInOrder(root.right, fn);
@@ -163,7 +178,7 @@ function traverseInOrder(root, fn) {
 function traversePreOrder(root, fn) {
     if (root == null) return;
 
-    if (fn) fn(root.value);
+    if (fn) fn(root);
     tree.traversalArr.push(root.value);
 
     traversePreOrder(root.left, fn);
@@ -175,7 +190,7 @@ function traversePostOrder(root, fn) {
     traversePostOrder(root.left, fn);
     traversePostOrder(root.right, fn);
 
-    if (fn) fn(root.value);
+    if (fn) fn(root);
     tree.traversalArr.push(root.value);
 }
 
@@ -193,29 +208,34 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     }
 };
 
-arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+// creating array with 100 random numbers between 1 to 100
+const randomArr = Array.from({ length: 100 }, () => Math.floor(Math.random() * 100) + 1);
 
+// creating new tree with generated array
+const tree = new Tree(randomArr);
 
-const tree = new Tree(arr);
+// is tree balanced i.e height of each node in the tree is not more than 1
+console.log(tree.isBalance());
 
-tree.insert(10);
+tree.levelOrder(tree.root, (node) => console.log(node.value));
+tree.preOrder(tree.root, (node) => console.log(node.value));
+tree.postOrder(tree.root, (node) => console.log(node.value));
+tree.inOrder(tree.root, (node) => console.log(node.value));
+
+tree.insert(101);
+tree.insert(103);
+tree.insert(104);
+tree.insert(105);
+
+console.log(tree.isBalance());
+
+tree.reBalance();
+
+console.log(tree.isBalance());
+
+tree.levelOrder(tree.root, (node) => console.log(node.value));
+tree.preOrder(tree.root, (node) => console.log(node.value));
+tree.postOrder(tree.root, (node) => console.log(node.value));
+tree.inOrder(tree.root, (node) => console.log(node.value));
 
 prettyPrint(tree.root);
-
-tree.deleteItem(tree.root, 67);
-
-prettyPrint(tree.root);
-
-tree.find(tree.root, 5);
-// tree.levelOrder(tree.root, function logger(val) {
-//     console.log(val);
-// });
-const inorderARray = tree.inOrder(tree.root);
-const preorderARray = tree.preOrder(tree.root);
-const postorderARray = tree.postOrder(tree.root);
-
-console.log(inorderARray, preorderARray, postorderARray);
-
-console.log(tree.height(tree.root));
-
-console.log(tree.depth(tree.root, { value: 10 }));
